@@ -418,7 +418,7 @@ void AESExpandKey256(uint *keybuf)
 #endif
 
 __attribute__((reqd_work_group_size(WORKSIZE, 8, 1)))
-__kernel void cn0(__global ulong *input, __global uint4 *Scratchpad, __global ulong *states, ulong Threads)
+__kernel void cn0(__global ulong *input, __global uint4 *Scratchpad0,__global uint4 *Scratchpad1,__global uint4 *Scratchpad2,__global uint4 *Scratchpad3, __global ulong *states, ulong Threads)
 {
 	ulong State[25];
 	uint ExpandedKey1[256];
@@ -440,16 +440,25 @@ __kernel void cn0(__global ulong *input, __global uint4 *Scratchpad, __global ul
 
 	barrier(CLK_LOCAL_MEM_FENCE);
 
+    __global uint4 *ScratchpadTmp;
+	if(gIdx / 1024 == 0)
+		ScratchpadTmp = Scratchpad0;
+	else if(gIdx / 1024 == 1)
+		ScratchpadTmp = Scratchpad1;
+	else if(gIdx / 1024 == 2)
+		ScratchpadTmp = Scratchpad2;
+	else if(gIdx / 1024 == 3)
+		ScratchpadTmp = Scratchpad3;
+#if(STRIDED_INDEX==0)
+	__global uint4 *Scratchpad = ScratchpadTmp + (gIdx % 1024) * (ITERATIONS >> 2);
+#else
+	__global uint4 *Scratchpad = ScratchpadTmp + (gIdx % 1024);
+#endif
+
 	// do not use early return here
 	if(gIdx < Threads)
 	{
 		states += 25 * gIdx;
-
-#if(STRIDED_INDEX==0)
-		Scratchpad += gIdx * (ITERATIONS >> 2);
-#else
-		Scratchpad += gIdx;
-#endif
 
 		((ulong8 *)State)[0] = vload8(0, input);
 		State[8] = input[8];
@@ -504,7 +513,7 @@ __kernel void cn0(__global ulong *input, __global uint4 *Scratchpad, __global ul
 }
 
 __attribute__((reqd_work_group_size(WORKSIZE, 1, 1)))
-__kernel void cn1(__global uint4 *Scratchpad, __global ulong *states, ulong Threads)
+__kernel void cn1(__global uint4 *Scratchpad0,__global uint4 *Scratchpad1,__global uint4 *Scratchpad2,__global uint4 *Scratchpad3, __global ulong *states, ulong Threads)
 {
 	ulong a[2], b[2];
 	__local uint AES0[256], AES1[256], AES2[256], AES3[256];
@@ -523,16 +532,26 @@ __kernel void cn1(__global uint4 *Scratchpad, __global ulong *states, ulong Thre
 	barrier(CLK_LOCAL_MEM_FENCE);
 
 	uint4 b_x;
-		
+
+    __global uint4 *ScratchpadTmp;
+	if(gIdx / 1024 == 0)
+		ScratchpadTmp = Scratchpad0;
+	else if(gIdx / 1024 == 1)
+		ScratchpadTmp = Scratchpad1;
+	else if(gIdx / 1024 == 2)
+		ScratchpadTmp = Scratchpad2;
+	else if(gIdx / 1024 == 3)
+		ScratchpadTmp = Scratchpad3;
+#if(STRIDED_INDEX==0)
+	__global uint4 *Scratchpad = ScratchpadTmp + (gIdx % 1024) * (ITERATIONS >> 2);
+#else
+	__global uint4 *Scratchpad = ScratchpadTmp + (gIdx % 1024);
+#endif
+
 	// do not use early return here
 	if(gIdx < Threads)
 	{
 		states += 25 * gIdx;
-#if(STRIDED_INDEX==0)
-		Scratchpad += gIdx * (ITERATIONS >> 2);
-#else
-		Scratchpad += gIdx;
-#endif
 
 		a[0] = states[0] ^ states[4];
 		b[0] = states[2] ^ states[6];
@@ -575,7 +594,7 @@ __kernel void cn1(__global uint4 *Scratchpad, __global ulong *states, ulong Thre
 }
 
 __attribute__((reqd_work_group_size(WORKSIZE, 8, 1)))
-__kernel void cn2(__global uint4 *Scratchpad, __global ulong *states, __global uint *Branch0, __global uint *Branch1, __global uint *Branch2, __global uint *Branch3, ulong Threads)
+__kernel void cn2(__global uint4 *Scratchpad0,__global uint4 *Scratchpad1,__global uint4 *Scratchpad2,__global uint4 *Scratchpad3, __global ulong *states, __global uint *Branch0, __global uint *Branch1, __global uint *Branch2, __global uint *Branch3, ulong Threads)
 {
 	__local uint AES0[256], AES1[256], AES2[256], AES3[256];
 	uint ExpandedKey2[256];
@@ -597,15 +616,24 @@ __kernel void cn2(__global uint4 *Scratchpad, __global ulong *states, __global u
 
 	barrier(CLK_LOCAL_MEM_FENCE);
 
+    __global uint4 *ScratchpadTmp;
+	if(gIdx / 1024 == 0)
+		ScratchpadTmp = Scratchpad0;
+	else if(gIdx / 1024 == 1)
+		ScratchpadTmp = Scratchpad1;
+	else if(gIdx / 1024 == 2)
+		ScratchpadTmp = Scratchpad2;
+	else if(gIdx / 1024 == 3)
+		ScratchpadTmp = Scratchpad3;
+#if(STRIDED_INDEX==0)
+	__global uint4 *Scratchpad = ScratchpadTmp + (gIdx % 1024) * (ITERATIONS >> 2);
+#else
+	__global uint4 *Scratchpad = ScratchpadTmp + (gIdx % 1024);
+#endif
 	// do not use early return here
 	if(gIdx < Threads)
 	{
 		states += 25 * gIdx;
-#if(STRIDED_INDEX==0)
-		Scratchpad += gIdx * (ITERATIONS >> 2);
-#else
-		Scratchpad += gIdx;
-#endif
 
 		#if defined(__Tahiti__) || defined(__Pitcairn__)
 
