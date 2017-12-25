@@ -20,6 +20,11 @@
 #include <stdio.h>
 
 #ifdef __GNUC__
+// pop will be called at the end of this file
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-pedantic"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+
 #include <x86intrin.h>
 static inline uint64_t _umul128(uint64_t a, uint64_t b, uint64_t* hi)
 {
@@ -746,3 +751,7 @@ void cryptonight_penta_hash(const void* input, size_t len, void* output, crypton
 		extra_hashes[ctx[i]->hash_state[0] & 3](ctx[i]->hash_state, 200, (char*)output + 32 * i);
 	}
 }
+
+#ifdef __GNUC__
+#	pragma GCC diagnostic pop
+#endif

@@ -38,7 +38,7 @@ namespace xmrstak
 		}
 
 		std::atomic<uint64_t> iHashCount;
-		std::atomic<uint64_t> iTimestamp;
+		std::atomic<int64_t> iTimestamp;
 		uint32_t iThreadNo;
 		BackendType backendType = UNKNOWN;
 

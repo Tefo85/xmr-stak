@@ -142,7 +142,7 @@ std::vector<iBackend*>* minethd::thread_starter(uint32_t threadOffset, miner_wor
 			printer::inst()->print_msg(L1, "WARNING on MacOS thread affinity is only advisory.");
 #endif
 
-			printer::inst()->print_msg(L1, "Starting AMD GPU thread %d, affinity: %d.", i, (int)cfg.cpu_aff);
+			printer::inst()->print_msg(L1, "Starting AMD GPU thread %d, affinity: %d.", i, cfg.cpu_aff);
 		}
 		else
 			printer::inst()->print_msg(L1, "Starting AMD GPU thread %d, no affinity.", i);
@@ -249,7 +249,7 @@ void minethd::work_main()
 			}
 
 			iCount += pGpuCtx->rawIntensity;
-			uint64_t iStamp = get_timestamp_ms();
+			int64_t iStamp = get_timestamp_ms();
 			iHashCount.store(iCount, std::memory_order_relaxed);
 			iTimestamp.store(iStamp, std::memory_order_relaxed);
 			std::this_thread::yield();

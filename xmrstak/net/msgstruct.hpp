@@ -172,14 +172,14 @@ struct ex_event
 
 #include <chrono>
 //Get steady_clock timestamp - misc helper function
-inline size_t get_timestamp()
+inline int64_t get_timestamp()
 {
 	using namespace std::chrono;
 	return time_point_cast<seconds>(steady_clock::now()).time_since_epoch().count();
-};
+}
 
 //Get milisecond timestamp
-inline size_t get_timestamp_ms()
+inline int64_t get_timestamp_ms()
 {
 	using namespace std::chrono;
 	if(high_resolution_clock::is_steady)

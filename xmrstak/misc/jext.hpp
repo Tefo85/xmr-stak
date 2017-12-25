@@ -1,7 +1,17 @@
 #pragma once
 
+#ifdef __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wuseless-cast"
+#	pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
+
 #include "xmrstak/rapidjson/document.h"
 #include "xmrstak/rapidjson/error/en.h"
+
+#ifdef __GNUC__
+# pragma GCC diagnostic pop
+#endif
 
 using namespace rapidjson;
 

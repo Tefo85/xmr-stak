@@ -59,12 +59,12 @@ private:
 
 	// Dev donation time period in seconds. 100 minutes by default.
 	// We will divide up this period according to the config setting
-	constexpr static size_t iDevDonatePeriod = 100 * 60;
+	constexpr static int64_t iDevDonatePeriod = 100 * 60;
 
 	inline bool is_dev_time()
 	{
 		//Add 2 seconds to compensate for connect
-		constexpr size_t dev_portion = double(iDevDonatePeriod) * fDevDonationLevel + 2;
+		constexpr int64_t dev_portion = double(iDevDonatePeriod) * fDevDonationLevel + 2;
 
 		if(dev_portion < 12) //No point in bothering with less than 10s
 			return false;
@@ -81,7 +81,7 @@ private:
 
 	size_t current_pool_id = invalid_pool_id;
 	size_t last_usr_pool_id = invalid_pool_id;
-	size_t dev_timestamp;
+	int64_t dev_timestamp;
 
 	std::list<jpsock> pools;
 
